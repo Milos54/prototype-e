@@ -95,35 +95,16 @@
   color: #000;
 }
 
-/* Row Tooltip */
-.row-tooltip {
-  position: absolute;
-  left: 100%;
-  margin-left: 0.5rem;
-  top: 50%;
-  transform: translateY(-50%);
-  background-color: #1f2937;
-  color: #fff;
-  font-size: 0.875rem;
-  padding: 0.5rem;
-  border-radius: 0.5rem;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-  width: 12rem;
-  z-index: 10;
-}
-
-.tooltip-label {
-  font-weight: 600;
-}
-
-.tooltip-arrow {
-  position: absolute;
-  left: -6px;
-  top: 50%;
-  transform: translateY(-50%) rotate(45deg);
-  width: 0.75rem;
-  height: 0.75rem;
-  background-color: #1f2937;
+/* React Tooltip Customization */
+.custom-tooltip {
+  background-color: #1f2937 !important;
+  color: #fff !important;
+  font-size: 0.875rem !important;
+  padding: 0.5rem !important;
+  border-radius: 0.5rem !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2) !important;
+  z-index: 1000 !important;
+  max-width: 200px !important;
 }
 
 /* Buttons */
@@ -133,14 +114,20 @@
 }
 
 .action-button {
-  padding: 0.5rem 1rem;
+  padding: 0.75rem;
   background-color: #2563eb;
   color: #fff;
   border: none;
   border-radius: 0.5rem;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: all 0.2s ease;
+  font-size: 1.2rem;
+  width: 3rem;
+  height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .action-button:hover {
@@ -152,35 +139,9 @@
   box-shadow: 0 0 0 2px #60a5fa;
 }
 
-/* Button Tooltip */
+/* Button Wrapper */
 .button-wrapper {
   position: relative;
-}
-
-.button-tooltip {
-  position: absolute;
-  top: -36px;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: #1f2937;
-  color: #fff;
-  font-size: 0.875rem;
-  padding: 0.25rem 0.75rem;
-  border-radius: 0.25rem;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-  white-space: nowrap;
-  z-index: 10;
-}
-
-.button-tooltip .tooltip-arrow {
-  bottom: 6px;
-  left: 50%;
-  transform: translate(-50%, 7px) rotate(45deg);
-  width: 0.75rem;
-  height: 0.75rem;
-  background-color: #1f2937;
-  position: absolute;
-  z-index: -2;
 }
 
 
@@ -196,5 +157,159 @@
 @media (min-width: 768px) {
   .prototype-wrapper {
     flex-direction: row;
+  }
+}
+
+/* Pros and Cons Section */
+.pros-cons-section {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.comparison-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  border-bottom: 2px solid #cbd5e1;
+  padding-bottom: 0.75rem;
+}
+
+.pros-cons-section h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+  color: #1e293b;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.pros-cons-section h3:first-child {
+  color: #059669;
+}
+
+.pros-cons-section h3:last-of-type {
+  color: #dc2626;
+  margin-top: 1.5rem;
+}
+
+.pros-cons-section ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.pros-cons-section li {
+  position: relative;
+  padding: 0.5rem 0 0.5rem 1.5rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: #475569;
+  border-left: 3px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.pros-cons-section li:hover {
+  background-color: rgba(255, 255, 255, 0.7);
+  border-left-color: #3b82f6;
+  padding-left: 1.75rem;
+}
+
+.pros-cons-section li:before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.75rem;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #94a3b8;
+}
+
+.pros-cons-section h3:first-child + ul li:before {
+  background-color: #10b981;
+}
+
+.pros-cons-section h3:last-of-type + ul li:before {
+  background-color: #ef4444;
+}
+
+/* Action Popup */
+.action-popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.popup-content {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  max-width: 400px;
+  width: 90%;
+  position: relative;
+  animation: slideIn 0.3s ease-out;
+}
+
+.popup-message {
+  font-size: 1rem;
+  color: #374151;
+  line-height: 1.5;
+  display: block;
+  margin-right: 2rem;
+}
+
+.popup-close {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 0.25rem;
+  transition: all 0.2s ease;
+}
+
+.popup-close:hover {
+  background-color: #f3f4f6;
+  color: #374151;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
   }
 }

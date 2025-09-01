@@ -1,9 +1,27 @@
 import React, { useState } from 'react';
+import { Tooltip } from 'react-tooltip';
 import './PrototypeE.css';
 
 export default function PrototypeE() {
-  const [hoveredRow, setHoveredRow] = useState(null);
-  const [focusedBtn, setFocusedBtn] = useState(null);
+  const [showPopup, setShowPopup] = useState(false);
+  const [popupMessage, setPopupMessage] = useState('');
+
+  // Handle escape key to close popup
+  React.useEffect(() => {
+    const handleEscape = (event) => {
+      if (event.key === 'Escape' && showPopup) {
+        setShowPopup(false);
+      }
+    };
+
+    if (showPopup) {
+      document.addEventListener('keydown', handleEscape);
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [showPopup]);
 
   const statuses = [
     'COMPLITED',
@@ -144,16 +162,53 @@ export default function PrototypeE() {
   ];
 
   const buttons = [
-    { id: 'add', label: 'Add Entry' },
-    { id: 'edit', label: 'Edit Entry' },
-    { id: 'delete', label: 'Delete Entry' },
-    { id: 'refresh', label: 'Refresh Table' },
+    { id: 'add', label: 'Add Entry', icon: '➕' },
+    { id: 'edit', label: 'Edit Entry', icon: '✏️' },
+    { id: 'delete', label: 'Delete Entry', icon: '🗑️' },
+    { id: 'refresh', label: 'Refresh Table', icon: '🔄' },
   ];
+
+  const handleButtonAction = (action) => {
+    const messages = {
+      add: 'Adding new entry to the trip list...',
+      edit: 'Opening edit mode for selected entry...',
+      delete: 'Deleting selected entry from the trip list...',
+      refresh: 'Refreshing the trip list data...'
+    };
+    
+    setPopupMessage(messages[action]);
+    setShowPopup(true);
+    
+    // Hide popup after 3 seconds
+    setTimeout(() => {
+      setShowPopup(false);
+    }, 3000);
+  };
 
   return (
       <div className="prototype-wrapper">
              
     <div className="prototype-container">
+      <div className="pros-cons-section">
+        <h2 className="comparison-title">Library vs Custom Tooltip Implementation</h2>
+        <h3>✅ Pros</h3>
+        <ul>
+          <li>Easy setup – simple API, minimal boilerplate.</li>
+          <li>Accessibility improvements over custom solutions – supports focus (not just hover), adds proper ARIA roles (role="tooltip", aria-describedby), and makes tooltips usable with screen readers.</li>
+          <li>Cross-browser reliability – consistent hover/focus behavior across browsers.</li>
+          <li>Customizable – styles can be overridden with CSS.</li>
+          <li>Stable & lightweight – doesn't bloat your bundle.</li>
+        </ul>
+        
+        <h3>❌ Cons</h3>
+        <ul>
+          <li>Accessibility is not perfect – newer libraries like Radix UI Tooltip or Floating UI do a more thorough job with WCAG/WAI-ARIA best practices.</li>
+          <li>Styling is manual – you need to write CSS to make it fit your design system.</li>
+          <li>Limited flexibility – fewer features (animations, advanced positioning) compared to Tippy.js or Floating UI.</li>
+          <li>Older design approach – not headless, less composable if you want fine-grained control.</li>
+        </ul>
+      </div>
+      
       <h2 className="title">Trip List</h2>
 
       {/* --- Table --- */}
@@ -174,10 +229,8 @@ export default function PrototypeE() {
               key={row.id}
               tabIndex={0}
               className="table-row"
-              onMouseEnter={() => setHoveredRow(row.id)}
-              onMouseLeave={() => setHoveredRow(null)}
-              onFocus={() => setHoveredRow(row.id)}
-              onBlur={() => setHoveredRow(null)}
+              data-tooltip-id={`row-tooltip-${row.id}`}
+                             data-tooltip-html={`Phone: ${row.travellerPhone}<br/>Price: ${row.price}`}
             >
               <td>{row.travellerName}</td>
               <td>{row.pickupDate}</td>
@@ -187,19 +240,6 @@ export default function PrototypeE() {
               <td>
                 <span className={getStatusClass(row.status)}>{row.status}</span>
               </td>
-
-              {hoveredRow === row.id && (
-                <div className="row-tooltip">
-                  <p>
-                    <span className="tooltip-label">Phone:</span>{' '}
-                    {row.travellerPhone}
-                  </p>
-                  <p>
-                    <span className="tooltip-label">Price:</span> {row.price}
-                  </p>
-                  <div className="tooltip-arrow"></div>
-                </div>
-              )}
             </tr>
           ))}
         </tbody>
@@ -209,27 +249,60 @@ export default function PrototypeE() {
       <div className="button-group">
         {buttons.map((btn) => (
           <div key={btn.id} className="button-wrapper">
-            <button
-              tabIndex={0}
-              className="action-button"
-              onMouseEnter={() => setFocusedBtn(btn.id)}
-              onMouseLeave={() => setFocusedBtn(null)}
-              onFocus={() => setFocusedBtn(btn.id)}
-              onBlur={() => setFocusedBtn(null)}
-            >
-              {btn.id.charAt(0).toUpperCase() + btn.id.slice(1)}
-            </button>
-
-            {focusedBtn === btn.id && (
-              <div className="button-tooltip">
-                {btn.label}
-                <div className="tooltip-arrow"></div>
-              </div>
-            )}
+                         <button
+               tabIndex={0}
+               className="action-button"
+               data-tooltip-id={`button-tooltip-${btn.id}`}
+               data-tooltip-content={btn.label}
+               onClick={() => handleButtonAction(btn.id)}
+               onKeyDown={(e) => {
+                 if (e.key === 'Enter' || e.key === ' ') {
+                   e.preventDefault();
+                   handleButtonAction(btn.id);
+                 }
+               }}
+             >
+               {btn.icon}
+             </button>
           </div>
         ))}
       </div>
-    </div>
+      
+      {/* React Tooltip Components */}
+                     {data.map((row) => (
+          <Tooltip
+            key={`row-tooltip-${row.id}`}
+            id={`row-tooltip-${row.id}`}
+            place="right"
+            className="custom-tooltip"
+          />
+        ))}
+      
+      {buttons.map((btn) => (
+        <Tooltip
+          key={`button-tooltip-${btn.id}`}
+          id={`button-tooltip-${btn.id}`}
+          place="top"
+          className="custom-tooltip"
+                 />
+       ))}
+       
+       {/* Action Popup */}
+       {showPopup && (
+         <div className="action-popup">
+           <div className="popup-content">
+             <span className="popup-message">{popupMessage}</span>
+             <button 
+               className="popup-close"
+               onClick={() => setShowPopup(false)}
+               aria-label="Close popup"
+             >
+               ×
+             </button>
+           </div>
+         </div>
+       )}
      </div>
+      </div>
   );
 }
